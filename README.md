@@ -1,0 +1,1 @@
+# lnksmgmt-service-registry
