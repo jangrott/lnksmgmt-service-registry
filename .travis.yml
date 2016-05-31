@@ -1,0 +1,28 @@
+sudo: required
+
+language: java
+
+jdk:
+  - oraclejdk8
+
+env:
+  global:
+    - REPO=jangrott/lnksmgmt_service_registry
+
+services:
+  - docker
+
+install:
+  - gradle assemble
+  - docker build -t $REPO .
+
+before_script:
+  - docker run -d --name serviceregistry $REPO
+
+script:
+  - gradle check
+  - docker ps | grep -q $REPO
+
+after_success:
+  - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then docker push $REPO; fi
